@@ -8,10 +8,10 @@ export default class StudentClass implements Student {
         // push it to firestore
     }
 
-    id: string;
-    name: string;
-    joined: Timestamp;
-    lastActive: Timestamp;
+    public id: string;
+    public name: string;
+    public joined: Timestamp;
+    public lastActive: Timestamp;
 
     constructor(studentID: string) {
         this.id = studentID;

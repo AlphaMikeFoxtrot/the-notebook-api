@@ -12,10 +12,10 @@ export default class DepartmentClass implements Department {
         // fetch all departments from firestore
     }
 
-    id: string;
-    name: string;
-    created: Timestamp;
-    lastUpdated: Timestamp;
+    public id: string;
+    public name: string;
+    public created: Timestamp;
+    public lastUpdated: Timestamp;
 
     constructor(departmentID: string) {
         this.id = departmentID;

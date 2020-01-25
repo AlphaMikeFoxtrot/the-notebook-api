@@ -12,10 +12,10 @@ export default class SubjectClass implements Subject {
         // fetch all subjects from firestore
     }
 
-    id: string;
-    name: string;
-    created: Timestamp;
-    lastUpdated: Timestamp;
+    public id: string;
+    public name: string;
+    public created: Timestamp;
+    public lastUpdated: Timestamp;
 
     constructor(subjectID: string) {
         this.id = subjectID;
