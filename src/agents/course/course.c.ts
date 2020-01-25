@@ -101,4 +101,16 @@ export default class CourseClass implements Course {
            then update data in firestore
         */
     }
+
+    public delete(): Promise<any> {
+        return ref
+            .doc(this.id)
+            .delete()
+            .then(() => {
+                return true;
+            })
+            .catch((err) => {
+                throw new Error(err.message);
+            });
+    }
 }

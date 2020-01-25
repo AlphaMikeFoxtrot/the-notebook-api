@@ -77,4 +77,41 @@ router.get("/:id", (req: Request, res: Response) => {
         });
 });
 
+// delete a course
+router.delete("/:id", (req: Request, res: Response) => {
+    const { id } = req.params;
+    if (!id) {
+        res
+            .status(400)
+            .json({
+                error: "Invalid payload"
+            })
+            .end();
+        return;
+    }
+
+    const course: CourseClass = new CourseClass(id);
+    return course
+        .delete()
+        .then(() => {
+            res
+                .status(200)
+                .json({
+                    error: false,
+                    message: "Resource successfully deleted"
+                })
+                .end();
+            return;
+        })
+        .catch((err) => {
+            res
+                .status(500)
+                .json({
+                    error: err
+                })
+                .end();
+            return;
+        });
+});
+
 export default router;
