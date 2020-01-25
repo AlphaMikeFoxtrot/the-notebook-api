@@ -64,6 +64,16 @@ export default class CourseClass implements Course {
 
     public get() {
         // get course from firestore and return it
+        return ref
+            .doc(this.id)
+            .get()
+            .then((doc: admin.firestore.DocumentSnapshot) => {
+                const course = doc.data();
+                return course;
+            })
+            .catch((err: any) => {
+                throw new Error(err.message);
+            });
     }
 
     public updateName(newName: string) {

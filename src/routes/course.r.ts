@@ -40,4 +40,41 @@ router.post("/", (req: Request, res: Response) => {
         });
 });
 
+// get a course
+router.get("/:id", (req: Request, res: Response) => {
+    const { id } = req.params;
+    if (!id) {
+        res
+            .status(400)
+            .json({
+                error: "Invalid payload"
+            })
+            .end();
+        return;
+    }
+
+    const course: CourseClass = new CourseClass(id);
+    return course
+        .get()
+        .then((courseData: Course) => {
+            res
+                .status(200)
+                .json({
+                    course: courseData,
+                    error: false,
+                })
+                .end();
+            return;
+        })
+        .catch((err: any) => {
+            res
+                .status(500)
+                .json({
+                    error: err.message
+                })
+                .end();
+            return;
+        });
+});
+
 export default router;
