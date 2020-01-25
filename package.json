@@ -36,7 +36,8 @@
   "homepage": "https://github.com/panjwanifardeen/the-notebook-api-v2#readme",
   "dependencies": {
     "@types/express": "^4.17.2",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "firebase-admin": "^8.9.2"
   },
   "devDependencies": {
     "tslint": "^5.20.1",
