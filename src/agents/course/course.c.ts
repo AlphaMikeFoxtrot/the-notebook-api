@@ -1,11 +1,52 @@
+import * as admin from "firebase-admin";
+import nanoid from "nanoid";
+import spacetime, { Spacetime } from "spacetime";
+
+import key from "../../assets/keys/serviceAccountkey.json";
+import globalConfig from "../../lib/global";
 import Timestamp from "../common/timestamp.i";
 import Course from "./course.i";
+
+admin.initializeApp({
+    credential: admin.credential.cert(key),
+    databaseURL: "https://the-notebook-fd924.firebaseio.com"
+});
+
+const { firestore } = globalConfig.firebase;
+const db = admin.firestore();
+const ref = db.collection(firestore.collections.courses);
 
 export default class CourseClass implements Course {
     public static create(name: string) {
         // generate an id
+        const id: string = nanoid();
+        // create timestamps
+        const now: Spacetime = spacetime.now();
+        const iso: string = now.format("iso") as string;
+        const timestamp: number = Date.now();
         // create a course object
+        const course: Course = {
+            created: {
+                iso,
+                timestamp
+            },
+            id,
+            lastUpdated: {
+                iso,
+                timestamp
+            },
+            name,
+        };
         // push it to firestore
+        return ref
+            .doc(id)
+            .set(course)
+            .then(() => {
+                return course;
+            })
+            .catch((err: any) => {
+                throw new Error(err.message);
+            });
     }
 
     public static fetchAll() {
