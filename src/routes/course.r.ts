@@ -3,6 +3,7 @@ import _ from "lodash";
 
 import CourseClass from "../agents/course/course.c";
 import Course from "../agents/course/course.i";
+import { validateURLParams } from "../middlewares/payloadValidation";
 
 const router = express.Router();
 
@@ -45,15 +46,6 @@ router.post("/", (req: Request, res: Response) => {
 // get a course
 router.get("/unus/:id", (req: Request, res: Response) => {
     const { id } = req.params;
-    if (!id) {
-        res
-            .status(400)
-            .json({
-                error: "Invalid payload"
-            })
-            .end();
-        return;
-    }
 
     const course: CourseClass = new CourseClass(id);
     return course
@@ -114,15 +106,6 @@ router.get("/omnis", (req: Request, res: Response) => {
 // delete a course
 router.delete("/:id", (req: Request, res: Response) => {
     const { id } = req.params;
-    if (!id) {
-        res
-            .status(400)
-            .json({
-                error: "Invalid payload"
-            })
-            .end();
-        return;
-    }
 
     const course: CourseClass = new CourseClass(id);
     return course
