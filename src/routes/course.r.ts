@@ -1,4 +1,6 @@
 import express, { Request, Response } from "express";
+import _ from "lodash";
+
 import CourseClass from "../agents/course/course.c";
 import Course from "../agents/course/course.i";
 
@@ -33,7 +35,7 @@ router.post("/", (req: Request, res: Response) => {
             res
                 .status(500)
                 .json({
-                    error: err
+                    error: err.message
                 })
                 .end();
             return;
@@ -107,11 +109,49 @@ router.delete("/:id", (req: Request, res: Response) => {
             res
                 .status(500)
                 .json({
-                    error: err
+                    error: err.message
                 })
                 .end();
             return;
         });
+});
+
+// update a course's name
+router.put("/:id", (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { name } = req.body;
+    if (!id || !name) {
+        res
+            .status(400)
+            .json({
+                error: "Invalid payload"
+            })
+            .end();
+        return;
+    }
+
+    const course: CourseClass = new CourseClass(id);
+    return course
+        .updateName(name)
+        .then((value) => {
+            res
+                .status(200)
+                .json({
+                    empty: _.isEmpty(value),
+                    error: false,
+                    writeResult: value,
+                })
+                .end();
+            return;
+        })
+        .catch((err) => {
+            return res
+                .status(404)
+                .json({
+                    error: err.message
+                })
+                .end();
+       });
 });
 
 export default router;

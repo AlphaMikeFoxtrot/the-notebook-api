@@ -1,4 +1,5 @@
 import * as admin from "firebase-admin";
+import _ from "lodash";
 import nanoid from "nanoid";
 import spacetime, { Spacetime } from "spacetime";
 
@@ -45,7 +46,7 @@ export default class CourseClass implements Course {
                 return course;
             })
             .catch((err: any) => {
-                throw new Error(err.message);
+                throw new Error(err);
             });
     }
 
@@ -72,13 +73,26 @@ export default class CourseClass implements Course {
                 return course;
             })
             .catch((err: any) => {
-                throw new Error(err.message);
+                throw new Error(err);
             });
     }
 
     public updateName(newName: string) {
-        this.name = newName;
         // update the course in firestore using this.id
+        return ref
+            .doc(this.id)
+            .update({
+                name: newName
+            })
+            .then((value: admin.firestore.WriteResult) => {
+                if (_.isEmpty(value)) {
+                    throw new Error("[404] requested resource does not exist");
+                }
+                return value;
+            })
+            .catch((err: any) => {
+                throw new Error("requested resource doesn't exist");
+            });
     }
 
     public getChildren(): any[] | void {
@@ -106,11 +120,11 @@ export default class CourseClass implements Course {
         return ref
             .doc(this.id)
             .delete()
-            .then(() => {
-                return true;
+            .then((value: admin.firestore.WriteResult) => {
+                return value;
             })
             .catch((err) => {
-                throw new Error(err.message);
+                throw new Error(err);
             });
     }
 }
