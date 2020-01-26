@@ -43,7 +43,7 @@ router.post("/", (req: Request, res: Response) => {
 });
 
 // get a course
-router.get("/:id", (req: Request, res: Response) => {
+router.get("/unus/:id", (req: Request, res: Response) => {
     const { id } = req.params;
     if (!id) {
         res
@@ -75,6 +75,38 @@ router.get("/:id", (req: Request, res: Response) => {
                     error: err.message
                 })
                 .end();
+            return;
+        });
+});
+
+// get all courses
+router.get("/omnis", (req: Request, res: Response) => {
+    return CourseClass
+        .fetchAll()
+        .then((courses) => {
+            console.log(JSON.stringify(courses));
+            if (!_.isEmpty(courses)) {
+              res
+                .status(200)
+                .json({
+                    courses,
+                    error: false,
+                })
+                .end();
+              return;
+            }
+            res
+              .status(400)
+              .json({
+                  error: "no courses found"
+              })
+              .end();
+            return;
+        })
+        .catch((err) => {
+            res.status(500).json({
+                error: err.message
+            }).end();
             return;
         });
 });

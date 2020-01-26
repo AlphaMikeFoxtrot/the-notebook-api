@@ -52,6 +52,20 @@ export default class CourseClass implements Course {
 
     public static fetchAll() {
         // fetch all courses from firestore
+        console.log("fetchall called");
+        return ref
+            .get()
+            .then(async (docs: admin.firestore.QuerySnapshot) => {
+                const courses: any[] = [];
+                await docs.forEach((doc) => {
+                    courses.push(doc.data());
+                });
+                console.log("courses", JSON.stringify(courses));
+                return courses;
+            })
+            .catch((err) => {
+                throw new Error(err);
+            });
     }
 
     public id: string;
