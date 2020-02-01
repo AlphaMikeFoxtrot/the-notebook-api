@@ -88,7 +88,8 @@ export default class DocumentClass implements Document {
         return ref
             .doc(this.id)
             .update({
-                name: newName
+                lastUpdated: getTimestamp(),
+                name: newName,
             })
             .then((value: admin.firestore.WriteResult) => {
                 if (_.isEmpty(value)) {
