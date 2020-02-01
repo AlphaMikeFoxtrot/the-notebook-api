@@ -3,7 +3,6 @@ import _ from "lodash";
 
 import CourseClass from "../agents/course/course.c";
 import Course from "../agents/course/course.i";
-import { validateURLParams } from "../middlewares/payloadValidation";
 
 const router = express.Router();
 

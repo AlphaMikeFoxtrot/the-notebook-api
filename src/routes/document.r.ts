@@ -3,7 +3,6 @@ import _ from "lodash";
 
 import DocumentClass from "../agents/document/document.c";
 import Document from "../agents/document/document.i";
-import { validateURLParams } from "../middlewares/payloadValidation";
 
 const router = express.Router();
 

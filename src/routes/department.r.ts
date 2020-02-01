@@ -3,7 +3,6 @@ import _ from "lodash";
 
 import DepartmentClass from "../agents/department/department.c";
 import Department from "../agents/department/department.i";
-import { validateURLParams } from "../middlewares/payloadValidation";
 
 const router = express.Router();
 
