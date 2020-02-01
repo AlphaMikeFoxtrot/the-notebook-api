@@ -1,15 +1,68 @@
+import * as admin from "firebase-admin";
+import _ from "lodash";
+import nanoid from "nanoid";
+import spacetime, { Spacetime } from "spacetime";
+
+import globalConfig from "../../lib/global";
+import initializeFirebase from "../../lib/initFirebase.js";
 import Timestamp from "../common/timestamp.i";
 import Subject from "./subject.i";
+
+initializeFirebase();
+
+const { firestore } = globalConfig.firebase;
+const db = admin.firestore();
+const ref = db.collection(firestore.collections.subjects);
 
 export default class SubjectClass implements Subject {
     public static create(name: string) {
         // generate an id
+        const id: string = nanoid();
+        // create timestamps
+        const now: Spacetime = spacetime.now();
+        const iso: string = now.format("iso") as string;
+        const timestamp: number = Date.now();
         // create a subject object
+        const subject: Subject = {
+            created: {
+                iso,
+                timestamp
+            },
+            id,
+            lastUpdated: {
+                iso,
+                timestamp
+            },
+            name,
+        };
         // push it to firestore
+        return ref
+            .doc(id)
+            .set(subject)
+            .then(() => {
+                return subject;
+            })
+            .catch((err: any) => {
+                throw new Error(err);
+            });
     }
 
     public static fetchAll() {
         // fetch all subjects from firestore
+        console.log("fetchall called");
+        return ref
+            .get()
+            .then(async (docs: admin.firestore.QuerySnapshot) => {
+                const subjects: any[] = [];
+                await docs.forEach((doc) => {
+                    subjects.push(doc.data());
+                });
+                console.log("subjects", JSON.stringify(subjects));
+                return subjects;
+            })
+            .catch((err) => {
+                throw new Error(err);
+            });
     }
 
     public id: string;
@@ -23,11 +76,34 @@ export default class SubjectClass implements Subject {
 
     public get() {
         // get subject from firestore and return it
+        return ref
+            .doc(this.id)
+            .get()
+            .then((doc: admin.firestore.DocumentSnapshot) => {
+                const subject = doc.data();
+                return subject;
+            })
+            .catch((err: any) => {
+                throw new Error(err);
+            });
     }
 
     public updateName(newName: string) {
-        this.name = newName;
         // update the subject in firestore using this.id
+        return ref
+            .doc(this.id)
+            .update({
+                name: newName
+            })
+            .then((value: admin.firestore.WriteResult) => {
+                if (_.isEmpty(value)) {
+                    throw new Error("[404] requested resource does not exist");
+                }
+                return value;
+            })
+            .catch((err: any) => {
+                throw new Error("requested resource doesn't exist");
+            });
     }
 
     public getChildren(): any[] | void {
@@ -49,5 +125,17 @@ export default class SubjectClass implements Subject {
            add new child to subject's children and
            then update data in firestore
         */
+    }
+
+    public delete(): Promise<any> {
+        return ref
+            .doc(this.id)
+            .delete()
+            .then((value: admin.firestore.WriteResult) => {
+                return value;
+            })
+            .catch((err) => {
+                throw new Error(err);
+            });
     }
 }

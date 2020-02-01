@@ -4,7 +4,8 @@ const global: any = {
             collections: {
                 courses: "courses",
                 departments: "departments",
-                documents: "documents"
+                documents: "documents",
+                subjects: "subjects"
             }
         }
     }
