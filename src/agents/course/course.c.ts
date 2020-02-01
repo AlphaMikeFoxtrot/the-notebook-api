@@ -3,15 +3,12 @@ import _ from "lodash";
 import nanoid from "nanoid";
 import spacetime, { Spacetime } from "spacetime";
 
-import key from "../../assets/keys/serviceAccountkey.json";
 import globalConfig from "../../lib/global";
+import initializeFirebase from "../../lib/initFirebase.js";
 import Timestamp from "../common/timestamp.i";
 import Course from "./course.i";
 
-admin.initializeApp({
-    credential: admin.credential.cert(key),
-    databaseURL: "https://the-notebook-fd924.firebaseio.com"
-});
+initializeFirebase();
 
 const { firestore } = globalConfig.firebase;
 const db = admin.firestore();
