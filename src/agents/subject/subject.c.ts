@@ -3,6 +3,7 @@ import _ from "lodash";
 import nanoid from "nanoid";
 import spacetime, { Spacetime } from "spacetime";
 
+import getTimestamp from "../../lib/getTimestamp";
 import globalConfig from "../../lib/global";
 import initializeFirebase from "../../lib/initFirebase.js";
 import Timestamp from "../common/timestamp.i";
@@ -19,20 +20,14 @@ export default class SubjectClass implements Subject {
         // generate an id
         const id: string = nanoid();
         // create timestamps
-        const now: Spacetime = spacetime.now();
-        const iso: string = now.format("iso") as string;
-        const timestamp: number = Date.now();
+        const timestamp: Timestamp = getTimestamp();
+        const created = timestamp;
+        const lastUpdated = timestamp;
         // create a subject object
         const subject: Subject = {
-            created: {
-                iso,
-                timestamp
-            },
+            created,
             id,
-            lastUpdated: {
-                iso,
-                timestamp
-            },
+            lastUpdated,
             name,
         };
         // push it to firestore
