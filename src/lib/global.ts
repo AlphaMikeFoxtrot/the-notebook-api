@@ -3,7 +3,8 @@ const global: any = {
         firestore: {
             collections: {
                 courses: "courses",
-                departments: "departments"
+                departments: "departments",
+                documents: "documents"
             }
         }
     }
