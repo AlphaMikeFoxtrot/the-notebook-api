@@ -108,10 +108,21 @@ export default class CourseClass implements Course {
         // else, fetch the course from firestore and then fetch the children
     }
 
-    public addChild(child: string): Course | void {
-        // check if course has already been fetched
-        // if true, add child to this.children(TODO) then update data in firestore
-        // else, fetch the course from firestore, add new child to course's children and the update data in firestore
+    public addChild(childID: string): Promise<admin.firestore.WriteResult> {
+        // TODO: check if parent and child exist before pushing
+        return admin
+            .firestore()
+            .collection(firestore.collections.courses)
+            .doc(this.id)
+            .update({
+                subjects: admin.firestore.FieldValue.arrayUnion(childID)
+            })
+            .then((value: admin.firestore.WriteResult) => {
+                return value;
+            })
+            .catch((err: any) => {
+                throw new Error(err);
+            });
     }
 
     public removeChild(child: string): Course | void {

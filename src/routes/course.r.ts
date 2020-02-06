@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import _ from "lodash";
 
+import * as admin from "firebase-admin";
 import CourseClass from "../agents/course/course.c";
 import Course from "../agents/course/course.i";
 
@@ -39,6 +40,41 @@ router.post("/", (req: Request, res: Response) => {
                 })
                 .end();
             return;
+        });
+});
+
+// add a child
+// add a child
+router.post("/foeto/:id/:childID", (req: Request, res: Response) => {
+    const { id, childID } = req.params;
+    if (!id || !childID) {
+        return res
+            .status(400)
+            .json({
+                error: "Invalid payload"
+            })
+            .end();
+    }
+
+    const course: CourseClass = new CourseClass(id);
+    return course
+        .addChild(childID)
+        .then((value: admin.firestore.WriteResult) => {
+            return res
+                .status(200)
+                .json({
+                    error: false,
+                    value
+                })
+                .end();
+        })
+        .catch((err) => {
+            return res
+                .status(500)
+                .json({
+                    error: err.message
+                })
+                .end();
         });
 });
 
