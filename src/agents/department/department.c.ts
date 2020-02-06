@@ -108,8 +108,21 @@ export default class DepartmentClass implements Department {
         // else, fetch the department from firestore and then fetch the children
     }
 
-    public addChild(child: string): Department | void {
+    public addChild(childID: string): Promise<admin.firestore.WriteResult> {
         // check if department has already been fetched
+        return admin
+            .firestore()
+            .collection(firestore.collections.departments)
+            .doc(this.id)
+            .update({
+                courses: admin.firestore.FieldValue.arrayUnion(childID)
+            })
+            .then((value: admin.firestore.WriteResult) => {
+                return value;
+            })
+            .catch((err: any) => {
+                throw new Error(err);
+            });
         // if true, add child to this.children(TODO) then update data in firestore
         // else, fetch the department from firestore, add new child to
            // department's children and the update data in firestore

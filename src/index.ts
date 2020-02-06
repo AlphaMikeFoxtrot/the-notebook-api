@@ -7,7 +7,7 @@ import documentRoute from "./routes/document.r";
 import subjectRoute from "./routes/subject.r";
 
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 2548;
 
 // middlewares
 app.use(bodyParser.urlencoded({ extended: true }));
