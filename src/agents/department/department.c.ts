@@ -109,7 +109,7 @@ export default class DepartmentClass implements Department {
     }
 
     public addChild(childID: string): Promise<admin.firestore.WriteResult> {
-        // check if department has already been fetched
+        // TODO: check if parent and child exist before pushing
         return admin
             .firestore()
             .collection(firestore.collections.departments)
@@ -123,9 +123,6 @@ export default class DepartmentClass implements Department {
             .catch((err: any) => {
                 throw new Error(err);
             });
-        // if true, add child to this.children(TODO) then update data in firestore
-        // else, fetch the department from firestore, add new child to
-           // department's children and the update data in firestore
     }
 
     public removeChild(child: string): Department | void {
