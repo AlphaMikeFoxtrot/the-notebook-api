@@ -1,7 +1,7 @@
 import express, { Request, Response, Router } from "express";
 
 import UserClass from "../agents/user/user.c";
-import { NewUser, User } from "../agents/user/user.i";
+import User from "../agents/user/user.i";
 
 const router: Router = express.Router();
 

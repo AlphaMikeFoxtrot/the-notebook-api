@@ -1,14 +1,6 @@
 import Timestamp from "../common/timestamp.i";
 
-export interface NewUser {
-    username: string;
-    password: string;
-    email?: string;
-    name?: string;
-    loa: number;
-}
-
-export interface User {
+export default interface User {
     id: string;
     username: string;
     password: string;

@@ -6,7 +6,7 @@ import getTimestamp from "../../lib/getTimestamp";
 import globalConfig from "../../lib/global";
 import initializeFirebase from "../../lib/initFirebase";
 import Timestamp from "../common/timestamp.i";
-import { NewUser, User } from "./user.i";
+import User from "./user.i";
 
 initializeFirebase();
 
