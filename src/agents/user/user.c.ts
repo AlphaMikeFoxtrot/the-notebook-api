@@ -54,6 +54,21 @@ export default class UserClass implements User {
         }
     }
 
+    public static getAll(): Promise<User[]> {
+        return ref
+            .get()
+            .then((docs: admin.firestore.QuerySnapshot) => {
+                const users: User[] = [];
+                docs.forEach((doc: admin.firestore.DocumentSnapshot) => {
+                    users.push(doc.data() as User);
+                });
+                return users;
+            })
+            .catch((err) => {
+                throw new Error(err);
+            });
+    }
+
     public id: string;
     public username: string;
     public password: string;
@@ -62,4 +77,24 @@ export default class UserClass implements User {
     public loa: number = 0;
     public created: Timestamp;
     public lastActive: Timestamp;
+
+    constructor(id: string) {
+        this.id = id;
+    }
+
+    public get(): Promise<any> {
+        return ref
+            .doc(this.id)
+            .get()
+            .then((doc: admin.firestore.DocumentSnapshot) => {
+                if (doc.exists) {
+                    return doc.data();
+                } else {
+                    throw new Error("Resource not found");
+                }
+            })
+            .catch ((err) => {
+                throw new Error(err);
+            });
+    }
 }

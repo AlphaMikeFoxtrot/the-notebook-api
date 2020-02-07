@@ -23,4 +23,49 @@ router.post("/register", (req: Request, res: Response) => {
         });
 });
 
+// get all users
+// TODO: check user's loa after adding passport-js-jwt auth
+router.get("/omnis", (req: Request, res: Response) => {
+    return UserClass
+        .getAll()
+        .then((users) => {
+            res.status(200).json({
+                error: false,
+                users
+            }).end();
+            return;
+        })
+        .catch((err) => {
+            res.status(500).json({
+                error: err.message
+            }).end();
+            return;
+        });
+});
+
+// get one user
+// TODO: check user's loa after adding passport-js-jwt auth
+router.get("/unus/:id", (req: Request, res: Response) => {
+    const { id } = req.params;
+    if (!id) {
+        return res.status(400).json({
+            error: "Inavlid Payload"
+        }).end();
+    }
+    const user: UserClass = new UserClass(id);
+    return user
+        .get()
+        .then((data) => {
+            return res.status(200).json({
+                error: false,
+                user: data
+            }).end();
+        })
+        .catch((err) => {
+            return res.status(500).json({
+                error: err.message
+            }).end();
+        });
+});
+
 export default router;
