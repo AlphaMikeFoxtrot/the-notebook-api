@@ -5,9 +5,13 @@ const global: any = {
                 courses: "courses",
                 departments: "departments",
                 documents: "documents",
-                subjects: "subjects"
+                subjects: "subjects",
+                users: "users"
             }
         }
+    },
+    hash: {
+        salts: 12
     }
 };
 

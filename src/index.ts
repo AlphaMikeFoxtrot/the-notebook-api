@@ -5,6 +5,7 @@ import courseRoute from "./routes/course.r";
 import departmentRoute from "./routes/department.r";
 import documentRoute from "./routes/document.r";
 import subjectRoute from "./routes/subject.r";
+import userRoute from "./routes/user.r";
 
 const app = express();
 const PORT = process.env.PORT || 2548;
@@ -18,5 +19,6 @@ app.use("/course", courseRoute);
 app.use("/department", departmentRoute);
 app.use("/document", documentRoute);
 app.use("/subject", subjectRoute);
+app.use("/user", userRoute);
 
 app.listen(PORT, () => console.log(`listening on port ${PORT}`));
