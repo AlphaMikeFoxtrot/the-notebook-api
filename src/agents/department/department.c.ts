@@ -108,21 +108,32 @@ export default class DepartmentClass implements Department {
         // else, fetch the department from firestore and then fetch the children
     }
 
-    public addChild(childID: string): Promise<admin.firestore.WriteResult> {
-        // TODO: check if parent and child exist before pushing
-        return admin
-            .firestore()
-            .collection(firestore.collections.departments)
-            .doc(this.id)
-            .update({
-                courses: admin.firestore.FieldValue.arrayUnion(childID)
-            })
-            .then((value: admin.firestore.WriteResult) => {
-                return value;
-            })
-            .catch((err: any) => {
-                throw new Error(err);
-            });
+    public async addChild(childID: string): Promise<admin.firestore.WriteResult> {
+        const parent: admin.firestore.DocumentSnapshot = await ref.doc(this.id).get();
+        const child: admin.firestore.DocumentSnapshot = await admin
+                                                                .firestore()
+                                                                .collection(firestore.collections.courses)
+                                                                .doc(childID)
+                                                                .get();
+        if (parent.exists) {        // check if parent exists
+            if (child.exists) {     // check if child exists
+                return ref
+                    .doc(this.id)
+                    .update({
+                        courses: admin.firestore.FieldValue.arrayUnion(childID)
+                    })
+                    .then((value: admin.firestore.WriteResult) => {
+                        return value;
+                    })
+                    .catch((err: any) => {
+                        throw new Error(err);
+                    });
+            } else {
+                throw new Error("Child resource not found");
+            }
+        } else {
+            throw new Error("Parent resource not found");
+        }
     }
 
     public removeChild(child: string): Department | void {

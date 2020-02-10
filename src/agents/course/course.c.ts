@@ -75,6 +75,9 @@ export default class CourseClass implements Course {
             .doc(this.id)
             .get()
             .then((doc: admin.firestore.DocumentSnapshot) => {
+                if (!doc.exists) {
+                    throw new Error("Resource does not exists");
+                }
                 const course = doc.data();
                 return course;
             })
