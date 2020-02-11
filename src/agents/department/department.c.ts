@@ -128,7 +128,7 @@ export default class DepartmentClass implements Department {
                     return ref
                         .doc(this.id)
                         .update({
-                            courses: admin.firestore.FieldValue.arrayUnion(childID),
+                            courses: admin.firestore.FieldValue.arrayUnion(child.ref),
                             lastUpdated: getTimestamp()
                         })
                         .then((value: admin.firestore.WriteResult) => {

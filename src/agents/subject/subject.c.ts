@@ -130,7 +130,7 @@ export default class SubjectClass implements Subject {
                     return ref
                         .doc(this.id)
                         .update({
-                            documents: admin.firestore.FieldValue.arrayUnion(childID),
+                            documents: admin.firestore.FieldValue.arrayUnion(child.ref),
                             lastUpdated: getTimestamp()
                         })
                         .then((value: admin.firestore.WriteResult) => {

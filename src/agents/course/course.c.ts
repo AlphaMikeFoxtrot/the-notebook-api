@@ -134,7 +134,7 @@ export default class CourseClass implements Course {
                         .doc(this.id)
                         .update({
                             lastUpdated: getTimestamp(),
-                            subjects: admin.firestore.FieldValue.arrayUnion(childID),
+                            subjects: admin.firestore.FieldValue.arrayUnion(child.ref),
                         })
                         .then((value: admin.firestore.WriteResult) => {
                             return value;
