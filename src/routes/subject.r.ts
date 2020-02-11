@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+import * as admin from "firebase-admin";
 import _ from "lodash";
 
 import SubjectClass from "../agents/subject/subject.c";
@@ -50,6 +51,73 @@ router.post(`${createResource}`, (req: Request, res: Response) => {
                 })
                 .end();
             return;
+        });
+});
+
+// add a child
+router.post(`${addChild}/:id/:childID`, (req: Request, res: Response) => {
+    const { id, childID } = req.params;
+    if (!id || !childID) {
+        return res
+            .status(400)
+            .json({
+                error: "Invalid payload"
+            })
+            .end();
+    }
+
+    const subject: SubjectClass = new SubjectClass(id);
+    return subject
+        .addChild(childID)
+        .then((value: admin.firestore.WriteResult) => {
+            return res
+                .status(200)
+                .json({
+                    error: false,
+                    value
+                })
+                .end();
+        })
+        .catch((err) => {
+            return res
+                .status(500)
+                .json({
+                    error: err.message
+                })
+                .end();
+        });
+});
+
+// remove a child
+router.delete(`${removeChild}/:id/:childID`, (req: Request, res: Response) => {
+    const { id, childID } = req.params;
+    if (!id || !childID) {
+        return res
+            .status(400)
+            .json({
+                error: "Invalid payload"
+            })
+            .end();
+    }
+
+    const subject: SubjectClass = new SubjectClass(id);
+    return subject
+        .removeChild(childID)
+        .then((value) => {
+            return res
+                .status(200)
+                .json({
+                    error: false,
+                    value
+                })
+                .end();
+        }).catch((err) => {
+            return res
+                .status(500)
+                .json({
+                    error: err.message
+                })
+                .end();
         });
 });
 
@@ -110,6 +178,39 @@ router.get(`${getAll}`, (req: Request, res: Response) => {
                 error: err.message
             }).end();
             return;
+        });
+});
+
+// get children
+router.get(`${getChildren}/:id`, (req: Request, res: Response) => {
+    const { id } = req.params;
+    if (!id) {
+        return res
+            .status(400)
+            .json({
+                error: "Invalid payload"
+            })
+            .end();
+    }
+    const subject: SubjectClass = new SubjectClass(id);
+    return subject
+        .getChildren()
+        .then((children: string[]) => {
+            return res
+                .status(200)
+                .json({
+                    children,
+                    error: false,
+                })
+                .end();
+        })
+        .catch((err) => {
+            return res
+                .status(500)
+                .json({
+                    error: err.message
+                })
+                .end();
         });
 });
 

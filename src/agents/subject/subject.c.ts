@@ -102,25 +102,67 @@ export default class SubjectClass implements Subject {
             });
     }
 
-    public getChildren(): any[] | void {
-        // check if subject has already been fetched
-        // if true, then use this.children(TODO) to fetch children
-        // else, fetch the subject from firestore and then fetch the children
+    public getChildren(): Promise<string[]> {
+        // check if subject exists
+        return ref
+            .doc(this.id)
+            .get()
+            .then((subject: admin.firestore.DocumentSnapshot) => {
+                if (!subject.exists) {
+                    throw new Error("Resource not found");
+                }
+                const documents: string[] = subject.data().documents;
+                return documents;
+            })
+            .catch((err) => {
+                throw new Error(err);
+            });
     }
 
-    public addChild(child: string): Subject | void {
-        // check if subject has already been fetched
-        // if true, add child to this.children(TODO) then update data in firestore
-        // else, fetch the subject from firestore, add new child to subject's children and the update data in firestore
+    public async addChild(childID: string): Promise<admin.firestore.WriteResult> {
+        let parent: admin.firestore.DocumentSnapshot;
+        let child: admin.firestore.DocumentSnapshot;
+        try {
+            parent = await ref.doc(this.id).get();
+            child = await admin.firestore().collection(firestore.collections.documents).doc(childID).get();
+            if (parent.exists) {        // check if parent exists
+                if (child.exists) {     // check if child exists
+                    return ref
+                        .doc(this.id)
+                        .update({
+                            documents: admin.firestore.FieldValue.arrayUnion(childID),
+                            lastUpdated: getTimestamp()
+                        })
+                        .then((value: admin.firestore.WriteResult) => {
+                            return value;
+                        })
+                        .catch((err: any) => {
+                            throw new Error(err);
+                        });
+                } else {
+                    throw new Error("Child resource not found");
+                }
+            } else {
+                throw new Error("Parent resource not found");
+            }
+        } catch (err) {
+            throw new Error(err);
+        }
     }
 
-    public removeChild(child: string): Subject | void {
-        // check if subject has already been fetched
-        // if true, add child to this.children(TODO) then update data in firestore
-        /* else, fetch the subject from firestore,
-           add new child to subject's children and
-           then update data in firestore
-        */
+    public removeChild(child: string): Promise<admin.firestore.WriteResult> {
+        return ref
+            .doc(this.id)
+            .update({
+                documents: admin.firestore.FieldValue.arrayRemove(child),
+                lastUpdated: getTimestamp()
+            })
+            .then((result: admin.firestore.WriteResult) => {
+                return result;
+            })
+            .catch((err) => {
+                throw new Error(err);
+            });
     }
 
     public delete(): Promise<any> {
