@@ -44,7 +44,7 @@ export default class SubjectClass implements Subject {
 
     public static fetchAll() {
         // fetch all subjects from firestore
-        console.log("fetchall called");
+
         return ref
             .get()
             .then(async (docs: admin.firestore.QuerySnapshot) => {
@@ -52,7 +52,7 @@ export default class SubjectClass implements Subject {
                 await docs.forEach((doc) => {
                     subjects.push(doc.data());
                 });
-                console.log("subjects", JSON.stringify(subjects));
+
                 return subjects;
             })
             .catch((err) => {

@@ -75,7 +75,7 @@ router.get("/omnis", (req: Request, res: Response) => {
     return DocumentClass
         .fetchAll()
         .then((documents) => {
-            console.log(JSON.stringify(documents));
+
             if (!_.isEmpty(documents)) {
               res
                 .status(200)

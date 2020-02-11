@@ -111,7 +111,7 @@ router.get("/omnis", (req: Request, res: Response) => {
     return CourseClass
         .fetchAll()
         .then((courses) => {
-            console.log(JSON.stringify(courses));
+
             if (!_.isEmpty(courses)) {
               res
                 .status(200)

@@ -44,7 +44,7 @@ export default class DocumentClass implements Document {
 
     public static fetchAll() {
         // fetch all documents from firestore
-        console.log("fetchall called");
+
         return ref
             .get()
             .then(async (docs: admin.firestore.QuerySnapshot) => {
@@ -52,7 +52,7 @@ export default class DocumentClass implements Document {
                 await docs.forEach((doc) => {
                     documents.push(doc.data());
                 });
-                console.log("documents", JSON.stringify(documents));
+
                 return documents;
             })
             .catch((err) => {

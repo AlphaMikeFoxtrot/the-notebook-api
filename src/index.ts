@@ -8,7 +8,7 @@ import subjectRoute from "./routes/subject.r";
 import userRoute from "./routes/user.r";
 
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3578;
 
 // middlewares
 app.use(bodyParser.urlencoded({ extended: true }));

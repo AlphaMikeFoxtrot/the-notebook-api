@@ -75,7 +75,7 @@ router.get("/omnis", (req: Request, res: Response) => {
     return SubjectClass
         .fetchAll()
         .then((subjects) => {
-            console.log(JSON.stringify(subjects));
+
             if (!_.isEmpty(subjects)) {
               res
                 .status(200)

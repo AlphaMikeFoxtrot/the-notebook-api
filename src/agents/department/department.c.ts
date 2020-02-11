@@ -43,7 +43,6 @@ export default class DepartmentClass implements Department {
 
     public static fetchAll() {
         // fetch all departments from firestore
-        console.log("fetchall called");
         return ref
             .get()
             .then(async (docs: admin.firestore.QuerySnapshot) => {
@@ -51,7 +50,7 @@ export default class DepartmentClass implements Department {
                 await docs.forEach((doc) => {
                     departments.push(doc.data());
                 });
-                console.log("departments", JSON.stringify(departments));
+
                 return departments;
             })
             .catch((err) => {
@@ -129,7 +128,8 @@ export default class DepartmentClass implements Department {
                     return ref
                         .doc(this.id)
                         .update({
-                            courses: admin.firestore.FieldValue.arrayUnion(childID)
+                            courses: admin.firestore.FieldValue.arrayUnion(childID),
+                            lastUpdated: getTimestamp()
                         })
                         .then((value: admin.firestore.WriteResult) => {
                             return value;
