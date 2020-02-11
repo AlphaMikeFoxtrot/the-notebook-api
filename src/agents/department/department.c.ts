@@ -109,30 +109,32 @@ export default class DepartmentClass implements Department {
     }
 
     public async addChild(childID: string): Promise<admin.firestore.WriteResult> {
-        const parent: admin.firestore.DocumentSnapshot = await ref.doc(this.id).get();
-        const child: admin.firestore.DocumentSnapshot = await admin
-                                                                .firestore()
-                                                                .collection(firestore.collections.courses)
-                                                                .doc(childID)
-                                                                .get();
-        if (parent.exists) {        // check if parent exists
-            if (child.exists) {     // check if child exists
-                return ref
-                    .doc(this.id)
-                    .update({
-                        courses: admin.firestore.FieldValue.arrayUnion(childID)
-                    })
-                    .then((value: admin.firestore.WriteResult) => {
-                        return value;
-                    })
-                    .catch((err: any) => {
-                        throw new Error(err);
-                    });
+        let parent: admin.firestore.DocumentSnapshot;
+        let child: admin.firestore.DocumentSnapshot;
+        try {
+            parent = await ref.doc(this.id).get();
+            child = await admin.firestore().collection(firestore.collections.courses).doc(childID).get();
+            if (parent.exists) {        // check if parent exists
+                if (child.exists) {     // check if child exists
+                    return ref
+                        .doc(this.id)
+                        .update({
+                            courses: admin.firestore.FieldValue.arrayUnion(childID)
+                        })
+                        .then((value: admin.firestore.WriteResult) => {
+                            return value;
+                        })
+                        .catch((err: any) => {
+                            throw new Error(err);
+                        });
+                } else {
+                    throw new Error("Child resource not found");
+                }
             } else {
-                throw new Error("Child resource not found");
+                throw new Error("Parent resource not found");
             }
-        } else {
-            throw new Error("Parent resource not found");
+        } catch (err) {
+            throw new Error(err);
         }
     }
 
