@@ -88,6 +88,39 @@ router.post(`${addChild}/:id/:childID`, (req: Request, res: Response) => {
         });
 });
 
+// remove a child
+router.delete(`${removeChild}/:id/:childID`, (req: Request, res: Response) => {
+    const { id, childID } = req.params;
+    if (!id || !childID) {
+        return res
+            .status(400)
+            .json({
+                error: "Invalid payload"
+            })
+            .end();
+    }
+
+    const course: CourseClass = new CourseClass(id);
+    return course
+        .removeChild(childID)
+        .then((value) => {
+            return res
+                .status(200)
+                .json({
+                    error: false,
+                    value
+                })
+                .end();
+        }).catch((err) => {
+            return res
+                .status(500)
+                .json({
+                    error: err.message
+                })
+                .end();
+        });
+});
+
 // get a course
 router.get(`${getOne}/:id`, (req: Request, res: Response) => {
     const { id } = req.params;
@@ -145,6 +178,39 @@ router.get(`${getAll}`, (req: Request, res: Response) => {
                 error: err.message
             }).end();
             return;
+        });
+});
+
+// get children
+router.get(`${getChildren}/:id`, (req: Request, res: Response) => {
+    const { id } = req.params;
+    if (!id) {
+        return res
+            .status(400)
+            .json({
+                error: "Invalid payload"
+            })
+            .end();
+    }
+    const course: CourseClass = new CourseClass(id);
+    return course
+        .getChildren()
+        .then((children: string[]) => {
+            return res
+                .status(200)
+                .json({
+                    children,
+                    error: false,
+                })
+                .end();
+        })
+        .catch((err) => {
+            return res
+                .status(500)
+                .json({
+                    error: err.message
+                })
+                .end();
         });
 });
 

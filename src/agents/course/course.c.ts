@@ -105,36 +105,67 @@ export default class CourseClass implements Course {
             });
     }
 
-    public getChildren(): any[] | void {
-        // check if course has already been fetched
-        // if true, then use this.children(TODO) to fetch children
-        // else, fetch the course from firestore and then fetch the children
-    }
-
-    public addChild(childID: string): Promise<admin.firestore.WriteResult> {
-        // TODO: check if parent and child exist before pushing
-        return admin
-            .firestore()
-            .collection(firestore.collections.courses)
+    public getChildren(): Promise<string[]> {
+        // check if course exists
+        return ref
             .doc(this.id)
-            .update({
-                subjects: admin.firestore.FieldValue.arrayUnion(childID)
+            .get()
+            .then((course: admin.firestore.DocumentSnapshot) => {
+                if (!course.exists) {
+                    throw new Error("Resource not found");
+                }
+                const subjects: string[] = course.data().subjects;
+                return subjects;
             })
-            .then((value: admin.firestore.WriteResult) => {
-                return value;
-            })
-            .catch((err: any) => {
+            .catch((err) => {
                 throw new Error(err);
             });
     }
 
-    public removeChild(child: string): Course | void {
-        // check if course has already been fetched
-        // if true, add child to this.children(TODO) then update data in firestore
-        /* else, fetch the course from firestore,
-           add new child to course's children and
-           then update data in firestore
-        */
+    public async addChild(childID: string): Promise<admin.firestore.WriteResult> {
+        let parent: admin.firestore.DocumentSnapshot;
+        let child: admin.firestore.DocumentSnapshot;
+        try {
+            parent = await ref.doc(this.id).get();
+            child = await admin.firestore().collection(firestore.collections.subjects).doc(childID).get();
+            if (parent.exists) {        // check if parent exists
+                if (child.exists) {     // check if child exists
+                    return ref
+                        .doc(this.id)
+                        .update({
+                            lastUpdated: getTimestamp(),
+                            subjects: admin.firestore.FieldValue.arrayUnion(childID),
+                        })
+                        .then((value: admin.firestore.WriteResult) => {
+                            return value;
+                        })
+                        .catch((err: any) => {
+                            throw new Error(err);
+                        });
+                } else {
+                    throw new Error("Child resource not found");
+                }
+            } else {
+                throw new Error("Parent resource not found");
+            }
+        } catch (err) {
+            throw new Error(err);
+        }
+    }
+
+    public removeChild(child: string): Promise<admin.firestore.WriteResult> {
+        return ref
+            .doc(this.id)
+            .update({
+                lastUpdated: getTimestamp(),
+                subjects: admin.firestore.FieldValue.arrayRemove(child),
+            })
+            .then((result: admin.firestore.WriteResult) => {
+                return result;
+            })
+            .catch((err) => {
+                throw new Error(err);
+            });
     }
 
     public delete(): Promise<any> {
