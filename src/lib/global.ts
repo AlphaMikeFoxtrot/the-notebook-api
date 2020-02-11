@@ -16,13 +16,13 @@ const global: any = {
     routes: {
         agentSpecific: {
             addChild: "/foeto",
-            create: "/",
-            delete: "/erado",
+            createResource: "/",
+            deleteResource: "/erado",
             getAll: "/omnis",
             getChildren: "/liberi",
             getOne: "/unus",
             removeChild: "/aufero",
-            update: "/immuto"
+            updateResource: "/immuto"
         },
         global: {
             course: `${process.env.BASE}/scilicet`,

@@ -4,11 +4,22 @@ import _ from "lodash";
 import admin from "firebase-admin";
 import DepartmentClass from "../agents/department/department.c";
 import Department from "../agents/department/department.i";
+import globalConfig from "../lib/global";
 
 const router = express.Router();
+const {
+    addChild,
+    createResource,
+    deleteResource,
+    getAll,
+    getChildren,
+    getOne,
+    removeChild,
+    updateResource
+} = globalConfig.routes.agentSpecific;
 
 // create a department
-router.post("/", (req: Request, res: Response) => {
+router.post(createResource, (req: Request, res: Response) => {
     const { name } = req.body;
     if (!name) {
         res
@@ -44,7 +55,7 @@ router.post("/", (req: Request, res: Response) => {
 });
 
 // add a child
-router.post("/foeto/:id/:childID", (req: Request, res: Response) => {
+router.post(`${addChild}/:id/:childID`, (req: Request, res: Response) => {
     const { id, childID } = req.params;
     if (!id || !childID) {
         return res
@@ -78,7 +89,7 @@ router.post("/foeto/:id/:childID", (req: Request, res: Response) => {
 });
 
 // remove a child
-router.delete("/aufero/:id/:childID", (req: Request, res: Response) => {
+router.delete(`${removeChild}/:id/:childID`, (req: Request, res: Response) => {
     const { id, childID } = req.params;
     if (!id || !childID) {
         return res
@@ -111,7 +122,7 @@ router.delete("/aufero/:id/:childID", (req: Request, res: Response) => {
 });
 
 // get a department
-router.get("/unus/:id", (req: Request, res: Response) => {
+router.get(`${getOne}/:id`, (req: Request, res: Response) => {
     const { id } = req.params;
 
     const department: DepartmentClass = new DepartmentClass(id);
@@ -139,7 +150,7 @@ router.get("/unus/:id", (req: Request, res: Response) => {
 });
 
 // get all departments
-router.get("/omnis", (req: Request, res: Response) => {
+router.get(`${getAll}`, (req: Request, res: Response) => {
     return DepartmentClass
         .fetchAll()
         .then((departments) => {
@@ -171,7 +182,7 @@ router.get("/omnis", (req: Request, res: Response) => {
 });
 
 // get children
-router.get("/liberi/:id", (req: Request, res: Response) => {
+router.get(`${getChildren}/:id`, (req: Request, res: Response) => {
     const { id } = req.params;
     if (!id) {
         return res
@@ -204,7 +215,7 @@ router.get("/liberi/:id", (req: Request, res: Response) => {
 });
 
 // delete a department
-router.delete("/:id", (req: Request, res: Response) => {
+router.delete(`${deleteResource}/:id`, (req: Request, res: Response) => {
     const { id } = req.params;
 
     const department: DepartmentClass = new DepartmentClass(id);
@@ -232,7 +243,7 @@ router.delete("/:id", (req: Request, res: Response) => {
 });
 
 // update a department's name
-router.put("/:id", (req: Request, res: Response) => {
+router.put(`${updateResource}/:id`, (req: Request, res: Response) => {
     const { id } = req.params;
     const { name } = req.body;
     if (!id || !name) {

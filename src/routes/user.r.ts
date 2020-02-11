@@ -2,11 +2,22 @@ import express, { Request, Response, Router } from "express";
 
 import UserClass from "../agents/user/user.c";
 import User from "../agents/user/user.i";
+import globalConfig from "../lib/global";
 
-const router: Router = express.Router();
+const router = express.Router();
+const {
+    addChild,
+    createResource,
+    deleteResource,
+    getAll,
+    getChildren,
+    getOne,
+    removeChild,
+    updateResource
+} = globalConfig.routes.agentSpecific;
 
 // create a new user(register)
-router.post("/register", (req: Request, res: Response) => {
+router.post(`${createResource}`, (req: Request, res: Response) => {
     const newUser: any = req.body;
     return UserClass
         .register(newUser)
@@ -25,7 +36,7 @@ router.post("/register", (req: Request, res: Response) => {
 
 // get all users
 // TODO: check user's loa after adding passport-js-jwt auth
-router.get("/omnis", (req: Request, res: Response) => {
+router.get(`${getAll}`, (req: Request, res: Response) => {
     return UserClass
         .getAll()
         .then((users) => {
@@ -45,7 +56,7 @@ router.get("/omnis", (req: Request, res: Response) => {
 
 // get one user
 // TODO: check user's loa after adding passport-js-jwt auth
-router.get("/unus/:id", (req: Request, res: Response) => {
+router.get(`${getOne}/:id`, (req: Request, res: Response) => {
     const { id } = req.params;
     if (!id) {
         return res.status(400).json({

@@ -3,11 +3,22 @@ import _ from "lodash";
 
 import SubjectClass from "../agents/subject/subject.c";
 import Subject from "../agents/subject/subject.i";
+import globalConfig from "../lib/global";
 
 const router = express.Router();
+const {
+    addChild,
+    createResource,
+    deleteResource,
+    getAll,
+    getChildren,
+    getOne,
+    removeChild,
+    updateResource
+} = globalConfig.routes.agentSpecific;
 
 // create a subject
-router.post("/", (req: Request, res: Response) => {
+router.post(`${createResource}`, (req: Request, res: Response) => {
     const { name } = req.body;
     if (!name) {
         res
@@ -43,7 +54,7 @@ router.post("/", (req: Request, res: Response) => {
 });
 
 // get a subject
-router.get("/unus/:id", (req: Request, res: Response) => {
+router.get(`${getOne}/:id`, (req: Request, res: Response) => {
     const { id } = req.params;
 
     const subject: SubjectClass = new SubjectClass(id);
@@ -71,7 +82,7 @@ router.get("/unus/:id", (req: Request, res: Response) => {
 });
 
 // get all subjects
-router.get("/omnis", (req: Request, res: Response) => {
+router.get(`${getAll}`, (req: Request, res: Response) => {
     return SubjectClass
         .fetchAll()
         .then((subjects) => {
@@ -103,7 +114,7 @@ router.get("/omnis", (req: Request, res: Response) => {
 });
 
 // delete a subject
-router.delete("/:id", (req: Request, res: Response) => {
+router.delete(`${deleteResource}/:id`, (req: Request, res: Response) => {
     const { id } = req.params;
 
     const subject: SubjectClass = new SubjectClass(id);
@@ -131,7 +142,7 @@ router.delete("/:id", (req: Request, res: Response) => {
 });
 
 // update a subject's name
-router.put("/:id", (req: Request, res: Response) => {
+router.put(`${updateResource}/:id`, (req: Request, res: Response) => {
     const { id } = req.params;
     const { name } = req.body;
     if (!id || !name) {

@@ -4,11 +4,22 @@ import _ from "lodash";
 import * as admin from "firebase-admin";
 import CourseClass from "../agents/course/course.c";
 import Course from "../agents/course/course.i";
+import globalConfig from "../lib/global";
 
 const router = express.Router();
+const {
+    addChild,
+    createResource,
+    deleteResource,
+    getAll,
+    getChildren,
+    getOne,
+    removeChild,
+    updateResource
+} = globalConfig.routes.agentSpecific;
 
 // create a course
-router.post("/", (req: Request, res: Response) => {
+router.post(`${createResource}`, (req: Request, res: Response) => {
     const { name } = req.body;
     if (!name) {
         res
@@ -44,8 +55,7 @@ router.post("/", (req: Request, res: Response) => {
 });
 
 // add a child
-// add a child
-router.post("/foeto/:id/:childID", (req: Request, res: Response) => {
+router.post(`${addChild}/:id/:childID`, (req: Request, res: Response) => {
     const { id, childID } = req.params;
     if (!id || !childID) {
         return res
@@ -79,7 +89,7 @@ router.post("/foeto/:id/:childID", (req: Request, res: Response) => {
 });
 
 // get a course
-router.get("/unus/:id", (req: Request, res: Response) => {
+router.get(`${getOne}/:id`, (req: Request, res: Response) => {
     const { id } = req.params;
 
     const course: CourseClass = new CourseClass(id);
@@ -107,7 +117,7 @@ router.get("/unus/:id", (req: Request, res: Response) => {
 });
 
 // get all courses
-router.get("/omnis", (req: Request, res: Response) => {
+router.get(`${getAll}`, (req: Request, res: Response) => {
     return CourseClass
         .fetchAll()
         .then((courses) => {
@@ -139,7 +149,7 @@ router.get("/omnis", (req: Request, res: Response) => {
 });
 
 // delete a course
-router.delete("/:id", (req: Request, res: Response) => {
+router.delete(`${deleteResource}/:id`, (req: Request, res: Response) => {
     const { id } = req.params;
 
     const course: CourseClass = new CourseClass(id);
@@ -167,7 +177,7 @@ router.delete("/:id", (req: Request, res: Response) => {
 });
 
 // update a course's name
-router.put("/:id", (req: Request, res: Response) => {
+router.put(`${updateResource}/:id`, (req: Request, res: Response) => {
     const { id } = req.params;
     const { name } = req.body;
     if (!id || !name) {
