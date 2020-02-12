@@ -102,7 +102,7 @@ export default class SubjectClass implements Subject {
             });
     }
 
-    public getChildren(): Promise<string[]> {
+    public getChildren(): Promise<any> {
         // check if subject exists
         return ref
             .doc(this.id)
@@ -111,8 +111,19 @@ export default class SubjectClass implements Subject {
                 if (!subject.exists) {
                     throw new Error("Resource not found");
                 }
-                const documents: string[] = subject.data().documents;
-                return documents;
+                const documentIDs: admin.firestore.DocumentReference[] = subject.data().documents;
+                const promises: any[] = [];
+                documentIDs.forEach((documentID: admin.firestore.DocumentReference) => {
+                    promises.push(documentID.get());
+                });
+                return Promise.all(promises);
+            })
+            .then((documents) => {
+                const populated: any[] = [];
+                documents.forEach((document: admin.firestore.DocumentSnapshot) => {
+                    populated.push(document.data());
+                });
+                return populated;
             })
             .catch((err) => {
                 throw new Error(err);
