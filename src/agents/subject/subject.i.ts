@@ -1,3 +1,5 @@
+import * as admin from "firebase-admin";
+
 import ITimestamp from "../common/timestamp.i";
 
 export default interface Subject {
@@ -5,4 +7,5 @@ export default interface Subject {
     name: string;
     created: ITimestamp;
     lastUpdated: ITimestamp;
+    documents?: admin.firestore.DocumentReference[];
 }

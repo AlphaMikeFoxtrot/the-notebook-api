@@ -1,4 +1,5 @@
 import * as admin from "firebase-admin";
+
 import ITimestamp from "../common/timestamp.i";
 
 export default interface Department {
