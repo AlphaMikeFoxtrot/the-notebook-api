@@ -70,20 +70,6 @@ export default class SubjectClass extends Parent implements Subject {
         this.id = subjectID;
     }
 
-    public get() {
-        // get subject from firestore and return it
-        return ref
-            .doc(this.id)
-            .get()
-            .then((doc: admin.firestore.DocumentSnapshot) => {
-                const subject = doc.data();
-                return subject;
-            })
-            .catch((err: any) => {
-                throw new Error(err);
-            });
-    }
-
     public updateName(newName: string) {
         // update the subject in firestore using this.id
         return ref

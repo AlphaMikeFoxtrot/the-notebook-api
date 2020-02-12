@@ -71,23 +71,6 @@ export default class CourseClass extends Parent implements Course {
         this.id = courseID;
     }
 
-    public get() {
-        // get course from firestore and return it
-        return ref
-            .doc(this.id)
-            .get()
-            .then((doc: admin.firestore.DocumentSnapshot) => {
-                if (!doc.exists) {
-                    throw new Error("Resource does not exists");
-                }
-                const course = doc.data();
-                return course;
-            })
-            .catch((err: any) => {
-                throw new Error(err);
-            });
-    }
-
     public updateName(newName: string) {
         // update the course in firestore using this.id
         return ref

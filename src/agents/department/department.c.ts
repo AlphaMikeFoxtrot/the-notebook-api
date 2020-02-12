@@ -69,20 +69,6 @@ export default class DepartmentClass extends Parent implements Department {
         this.id = departmentID;
     }
 
-    public async get() {
-        try {
-            const departmentData: admin.firestore.DocumentSnapshot = await ref.doc(this.id).get();
-            const department: Department = departmentData.data() as Department;
-            const courses: Course[] = await this.getChildren();
-            return {
-                ...department,
-                courses
-            };
-        } catch (err) {
-            throw new Error(err);
-        }
-    }
-
     public updateName(newName: string) {
         // update the department in firestore using this.id
         return ref

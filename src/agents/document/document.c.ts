@@ -78,21 +78,7 @@ export default class DocumentClass implements Document {
     constructor(documentID: string) {
         this.id = documentID;
     }
-
-    public get() {
-        // get document from firestore and return it
-        return ref
-            .doc(this.id)
-            .get()
-            .then((doc: admin.firestore.DocumentSnapshot) => {
-                const document = doc.data();
-                return document;
-            })
-            .catch((err: any) => {
-                throw new Error(err);
-            });
-    }
-
+    
     public updateName(newName: string) {
         // update the document in firestore using this.id
         return ref

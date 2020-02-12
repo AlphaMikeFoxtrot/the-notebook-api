@@ -9,6 +9,20 @@ export default abstract class Parent {
         public grandchild?: string
         ) {}
 
+    public async get() {
+        const parentData: admin.firestore.DocumentSnapshot = await this.ref.doc(this.id).get();
+        const parent = parentData.data();
+        if (this.child) {
+            const children: any[] = await this.getChildren();
+            return {
+                ...parent,
+                [this.child]: children
+            };
+        } else {
+            return parent;
+        }
+    }
+
     public getChildren(): Promise<any> {
         return this.ref.doc(this.id).get().then((parent: admin.firestore.DocumentSnapshot) => {
             if (!parent.exists) {
