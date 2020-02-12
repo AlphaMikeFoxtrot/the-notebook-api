@@ -1,7 +1,6 @@
 import * as admin from "firebase-admin";
 import _ from "lodash";
 import nanoid from "nanoid";
-import spacetime, { Spacetime } from "spacetime";
 
 import getTimestamp from "../../lib/getTimestamp";
 import globalConfig from "../../lib/global";
@@ -16,7 +15,11 @@ const db = admin.firestore();
 const ref = db.collection(firestore.collections.documents);
 
 export default class DocumentClass implements Document {
-    public static create(name: string) {
+    public static create(name: string, data: string) {
+        if (!DocumentClass.validateDocument(data)) {
+            throw new Error("Invalid document data");
+        }
+
         // generate an id
         const id: string = nanoid();
         // create timestamps
@@ -26,6 +29,7 @@ export default class DocumentClass implements Document {
         // create a document object
         const document: Document = {
             created,
+            data,
             id,
             lastUpdated,
             name,
@@ -40,6 +44,11 @@ export default class DocumentClass implements Document {
             .catch((err: any) => {
                 throw new Error(err);
             });
+    }
+
+    public static validateDocument(document: string): boolean {
+        const reg = new RegExp("^(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=)?$");
+        return reg.test(document);
     }
 
     public static fetchAll() {
@@ -61,6 +70,7 @@ export default class DocumentClass implements Document {
     }
 
     public id: string;
+    public data: string;
     public name: string;
     public created: Timestamp;
     public lastUpdated: Timestamp;
@@ -102,26 +112,28 @@ export default class DocumentClass implements Document {
             });
     }
 
-    public getChildren(): any[] | void {
-        // check if document has already been fetched
-        // if true, then use this.children(TODO) to fetch children
-        // else, fetch the document from firestore and then fetch the children
-    }
+    public updateData(newData: string) {
+        if (!DocumentClass.validateDocument(newData)) {
+            throw new Error("Invalid document data");
+        }
 
-    public addChild(child: string): Document | void {
-        // check if document has already been fetched
-        // if true, add child to this.children(TODO) then update data in firestore
-        // else, fetch the document from firestore, add new child to document's
-           // children and the update data in firestore
-    }
-
-    public removeChild(child: string): Document | void {
-        // check if document has already been fetched
-        // if true, add child to this.children(TODO) then update data in firestore
-        /* else, fetch the document from firestore,
-           add new child to document's children and
-           then update data in firestore
-        */
+        return ref
+            .doc(this.id)
+            .get()
+            .then((document: admin.firestore.DocumentSnapshot) => {
+                if (!document.exists) {
+                    throw new Error("Resource not found");
+                }
+                return ref.doc(this.id).update({
+                    data: newData
+                });
+            })
+            .then((value: admin.firestore.WriteResult) => {
+                return value;
+            })
+            .catch((err) => {
+                throw new Error(err);
+            });
     }
 
     public delete(): Promise<any> {

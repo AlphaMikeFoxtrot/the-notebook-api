@@ -19,8 +19,8 @@ const {
 
 // create a document
 router.post(`${createResource}`, (req: Request, res: Response) => {
-    const { name } = req.body;
-    if (!name) {
+    const { name, data } = req.body;
+    if (!name || !data) {
         res
             .status(400)
             .json({
@@ -31,7 +31,7 @@ router.post(`${createResource}`, (req: Request, res: Response) => {
     }
 
     return DocumentClass
-        .create(name)
+        .create(name, data)
         .then((document: Document) => {
             res
                 .status(200)
