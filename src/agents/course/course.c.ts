@@ -105,7 +105,7 @@ export default class CourseClass implements Course {
             });
     }
 
-    public getChildren(): Promise<string[]> {
+    public getChildren(): Promise<any> {
         // check if course exists
         return ref
             .doc(this.id)
@@ -114,8 +114,19 @@ export default class CourseClass implements Course {
                 if (!course.exists) {
                     throw new Error("Resource not found");
                 }
-                const subjects: string[] = course.data().subjects;
-                return subjects;
+                const subjectIDs: admin.firestore.DocumentReference[] = course.data().subjects;
+                const promises: any[] = [];
+                subjectIDs.forEach((subjectID: admin.firestore.DocumentReference) => {
+                    promises.push(subjectID.get());
+                });
+                return Promise.all(promises);
+            })
+            .then((subjects) => {
+                const populated: any[] = [];
+                subjects.forEach((subject: admin.firestore.DocumentSnapshot) => {
+                    populated.push(_.omit(subject.data(), "documents"));
+                });
+                return populated;
             })
             .catch((err) => {
                 throw new Error(err);
