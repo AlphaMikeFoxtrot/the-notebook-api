@@ -1,3 +1,5 @@
+import * as admin from "firebase-admin";
+
 import ITimestamp from "../common/timestamp.i";
 
 export default interface Course {
@@ -5,4 +7,5 @@ export default interface Course {
     name: string;
     created: ITimestamp;
     lastUpdated: ITimestamp;
+    subjects?: admin.firestore.DocumentReference[];
 }

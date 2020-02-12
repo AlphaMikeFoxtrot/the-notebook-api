@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import _ from "lodash";
 
 import admin from "firebase-admin";
+import Course from "../agents/course/course.i";
 import DepartmentClass from "../agents/department/department.c";
 import Department from "../agents/department/department.i";
 import globalConfig from "../lib/global";
@@ -195,7 +196,7 @@ router.get(`${getChildren}/:id`, (req: Request, res: Response) => {
     const department: DepartmentClass = new DepartmentClass(id);
     return department
         .getChildren()
-        .then((children: string[]) => {
+        .then((children: Course[]) => {
             return res
                 .status(200)
                 .json({

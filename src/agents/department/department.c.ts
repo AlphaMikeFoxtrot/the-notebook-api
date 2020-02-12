@@ -50,7 +50,6 @@ export default class DepartmentClass implements Department {
                 await docs.forEach((doc) => {
                     departments.push(doc.data());
                 });
-
                 return departments;
             })
             .catch((err) => {
@@ -100,7 +99,7 @@ export default class DepartmentClass implements Department {
             });
     }
 
-    public getChildren(): Promise<string[]> {
+    public getChildren(): Promise<any> {
         // check if department exists
         return ref
             .doc(this.id)
@@ -109,8 +108,19 @@ export default class DepartmentClass implements Department {
                 if (!department.exists) {
                     throw new Error("Resource not found");
                 }
-                const courses: string[] = department.data().courses;
-                return courses;
+                const courseIDs: admin.firestore.DocumentReference[] = department.data().courses;
+                const promises: any[] = [];
+                courseIDs.forEach((courseID: admin.firestore.DocumentReference) => {
+                    promises.push(courseID.get());
+                });
+                return Promise.all(promises);
+            })
+            .then((courses) => {
+                const populated: any[] = [];
+                courses.forEach((course: admin.firestore.DocumentSnapshot) => {
+                    populated.push(_.omit(course.data(), "subjects"));
+                });
+                return populated;
             })
             .catch((err) => {
                 throw new Error(err);
