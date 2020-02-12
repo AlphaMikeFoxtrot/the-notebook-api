@@ -6,6 +6,7 @@ import spacetime, { Spacetime } from "spacetime";
 import getTimestamp from "../../lib/getTimestamp";
 import globalConfig from "../../lib/global";
 import initializeFirebase from "../../lib/initFirebase.js";
+import Parent from "../common/parent.c";
 import Timestamp from "../common/timestamp.i";
 import Course from "./course.i";
 
@@ -15,7 +16,7 @@ const { firestore } = globalConfig.firebase;
 const db = admin.firestore();
 const ref = db.collection(firestore.collections.courses);
 
-export default class CourseClass implements Course {
+export default class CourseClass extends Parent implements Course {
     public static create(name: string) {
         // generate an id
         const id: string = nanoid();
@@ -66,6 +67,7 @@ export default class CourseClass implements Course {
     public lastUpdated: Timestamp;
 
     constructor(courseID: string) {
+        super(ref, courseID, "subjects", "documents");
         this.id = courseID;
     }
 
@@ -102,34 +104,6 @@ export default class CourseClass implements Course {
             })
             .catch((err: any) => {
                 throw new Error("requested resource doesn't exist");
-            });
-    }
-
-    public getChildren(): Promise<any> {
-        // check if course exists
-        return ref
-            .doc(this.id)
-            .get()
-            .then((course: admin.firestore.DocumentSnapshot) => {
-                if (!course.exists) {
-                    throw new Error("Resource not found");
-                }
-                const subjectIDs: admin.firestore.DocumentReference[] = course.data().subjects;
-                const promises: any[] = [];
-                subjectIDs.forEach((subjectID: admin.firestore.DocumentReference) => {
-                    promises.push(subjectID.get());
-                });
-                return Promise.all(promises);
-            })
-            .then((subjects) => {
-                const populated: any[] = [];
-                subjects.forEach((subject: admin.firestore.DocumentSnapshot) => {
-                    populated.push(_.omit(subject.data(), "documents"));
-                });
-                return populated;
-            })
-            .catch((err) => {
-                throw new Error(err);
             });
     }
 

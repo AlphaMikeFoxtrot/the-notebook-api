@@ -5,7 +5,9 @@ import nanoid from "nanoid";
 import getTimestamp from "../../lib/getTimestamp";
 import globalConfig from "../../lib/global";
 import initializeFirebase from "../../lib/initFirebase.js";
+import Parent from "../common/parent.c";
 import Timestamp from "../common/timestamp.i";
+import Course from "../course/course.i";
 import Department from "./department.i";
 
 initializeFirebase();
@@ -14,7 +16,7 @@ const { firestore } = globalConfig.firebase;
 const db = admin.firestore();
 const ref = db.collection(firestore.collections.departments);
 
-export default class DepartmentClass implements Department {
+export default class DepartmentClass extends Parent implements Department {
     public static create(name: string) {
         // generate an id
         const id: string = nanoid();
@@ -63,21 +65,22 @@ export default class DepartmentClass implements Department {
     public lastUpdated: Timestamp;
 
     constructor(departmentID: string) {
+        super(ref, departmentID, "courses", "subjects");
         this.id = departmentID;
     }
 
-    public get() {
-        // get department from firestore and return it
-        return ref
-            .doc(this.id)
-            .get()
-            .then((doc: admin.firestore.DocumentSnapshot) => {
-                const department = doc.data();
-                return department;
-            })
-            .catch((err: any) => {
-                throw new Error(err);
-            });
+    public async get() {
+        try {
+            const departmentData: admin.firestore.DocumentSnapshot = await ref.doc(this.id).get();
+            const department: Department = departmentData.data() as Department;
+            const courses: Course[] = await this.getChildren();
+            return {
+                ...department,
+                courses
+            };
+        } catch (err) {
+            throw new Error(err);
+        }
     }
 
     public updateName(newName: string) {
@@ -96,34 +99,6 @@ export default class DepartmentClass implements Department {
             })
             .catch((err: any) => {
                 throw new Error("requested resource doesn't exist");
-            });
-    }
-
-    public getChildren(): Promise<any> {
-        // check if department exists
-        return ref
-            .doc(this.id)
-            .get()
-            .then((department: admin.firestore.DocumentSnapshot) => {
-                if (!department.exists) {
-                    throw new Error("Resource not found");
-                }
-                const courseIDs: admin.firestore.DocumentReference[] = department.data().courses;
-                const promises: any[] = [];
-                courseIDs.forEach((courseID: admin.firestore.DocumentReference) => {
-                    promises.push(courseID.get());
-                });
-                return Promise.all(promises);
-            })
-            .then((courses) => {
-                const populated: any[] = [];
-                courses.forEach((course: admin.firestore.DocumentSnapshot) => {
-                    populated.push(_.omit(course.data(), "subjects"));
-                });
-                return populated;
-            })
-            .catch((err) => {
-                throw new Error(err);
             });
     }
 

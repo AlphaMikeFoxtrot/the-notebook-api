@@ -1,11 +1,11 @@
 import * as admin from "firebase-admin";
 import _ from "lodash";
 import nanoid from "nanoid";
-import spacetime, { Spacetime } from "spacetime";
 
 import getTimestamp from "../../lib/getTimestamp";
 import globalConfig from "../../lib/global";
 import initializeFirebase from "../../lib/initFirebase.js";
+import Parent from "../common/parent.c";
 import Timestamp from "../common/timestamp.i";
 import Subject from "./subject.i";
 
@@ -15,7 +15,7 @@ const { firestore } = globalConfig.firebase;
 const db = admin.firestore();
 const ref = db.collection(firestore.collections.subjects);
 
-export default class SubjectClass implements Subject {
+export default class SubjectClass extends Parent implements Subject {
     public static create(name: string) {
         // generate an id
         const id: string = nanoid();
@@ -66,6 +66,7 @@ export default class SubjectClass implements Subject {
     public lastUpdated: Timestamp;
 
     constructor(subjectID: string) {
+        super(ref, subjectID, "documents");
         this.id = subjectID;
     }
 
@@ -99,34 +100,6 @@ export default class SubjectClass implements Subject {
             })
             .catch((err: any) => {
                 throw new Error("requested resource doesn't exist");
-            });
-    }
-
-    public getChildren(): Promise<any> {
-        // check if subject exists
-        return ref
-            .doc(this.id)
-            .get()
-            .then((subject: admin.firestore.DocumentSnapshot) => {
-                if (!subject.exists) {
-                    throw new Error("Resource not found");
-                }
-                const documentIDs: admin.firestore.DocumentReference[] = subject.data().documents;
-                const promises: any[] = [];
-                documentIDs.forEach((documentID: admin.firestore.DocumentReference) => {
-                    promises.push(documentID.get());
-                });
-                return Promise.all(promises);
-            })
-            .then((documents) => {
-                const populated: any[] = [];
-                documents.forEach((document: admin.firestore.DocumentSnapshot) => {
-                    populated.push(document.data());
-                });
-                return populated;
-            })
-            .catch((err) => {
-                throw new Error(err);
             });
     }
 
