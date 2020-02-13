@@ -20,18 +20,14 @@ const { course, department, document, subject, user } = globalConfig.routes.glob
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+// general
+app.use(express.static("public"));
+
 // routes
 app.use(course, courseRoute);
 app.use(department, departmentRoute);
 app.use(document, documentRoute);
 app.use(subject, subjectRoute);
 app.use(user, userRoute);
-
-app.post("/test", (req, res) => {
-    const { hw } = req.body;
-    return res.status(200).json({
-        decrypted: decrypt(hw)
-    }).end();
-});
 
 app.listen(PORT, () => console.log(`listening on port ${PORT}`));

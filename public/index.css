@@ -1,0 +1,14 @@
+body {
+    height: 100vh;
+    background-image: url("https://images.wallpaperscraft.com/image/book_bw_silhouette_142959_3840x2160.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.center {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    height: 100%;
+}
