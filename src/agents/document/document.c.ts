@@ -5,6 +5,7 @@ import nanoid from "nanoid";
 import getTimestamp from "../../lib/getTimestamp";
 import globalConfig from "../../lib/global";
 import initializeFirebase from "../../lib/initFirebase";
+import Parent from "../common/parent.c";
 import Timestamp from "../common/timestamp.i";
 import Document from "./document.i";
 
@@ -14,7 +15,7 @@ const { firestore } = globalConfig.firebase;
 const db = admin.firestore();
 const ref = db.collection(firestore.collections.documents);
 
-export default class DocumentClass implements Document {
+export default class DocumentClass extends Parent implements Document {
     public static create(name: string, data: string) {
         if (!DocumentClass.validateDocument(data)) {
             throw new Error("Invalid document data");
@@ -76,9 +77,10 @@ export default class DocumentClass implements Document {
     public lastUpdated: Timestamp;
 
     constructor(documentID: string) {
+        super(ref, documentID);
         this.id = documentID;
     }
-    
+
     public updateName(newName: string) {
         // update the document in firestore using this.id
         return ref

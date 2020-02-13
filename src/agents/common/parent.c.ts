@@ -5,7 +5,7 @@ export default abstract class Parent {
     constructor(
         public ref: admin.firestore.CollectionReference,
         public id: string,
-        public child: string,
+        public child?: string,
         public grandchild?: string
         ) {}
 
