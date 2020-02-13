@@ -21,10 +21,11 @@ router.post(`${createResource}`, (req: Request, res: Response) => {
     const newUser: any = req.body;
     return UserClass
         .register(newUser)
-        .then((user: User) => {
+        .then(({ user, authToken }) => {
             return res.status(200).json({
+                authToken,
                 error: false,
-                user
+                user,
             }).end();
         })
         .catch((err) => {

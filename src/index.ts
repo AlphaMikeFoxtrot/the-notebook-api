@@ -4,6 +4,7 @@ dotenv.config();
 import bodyParser from "body-parser";
 import express from "express";
 
+import { decrypt } from "./lib/cryptic";
 import globalConfig from "./lib/global";
 import courseRoute from "./routes/course.r";
 import departmentRoute from "./routes/department.r";
@@ -25,5 +26,12 @@ app.use(department, departmentRoute);
 app.use(document, documentRoute);
 app.use(subject, subjectRoute);
 app.use(user, userRoute);
+
+app.post("/test", (req, res) => {
+    const { hw } = req.body;
+    return res.status(200).json({
+        decrypted: decrypt(hw)
+    }).end();
+});
 
 app.listen(PORT, () => console.log(`listening on port ${PORT}`));

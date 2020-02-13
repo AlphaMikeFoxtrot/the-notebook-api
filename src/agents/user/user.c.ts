@@ -3,6 +3,7 @@ import * as admin from "firebase-admin";
 import _ from "lodash";
 import nanoid = require("nanoid");
 
+import { encrypt } from "../../lib/cryptic";
 import getTimestamp from "../../lib/getTimestamp";
 import globalConfig from "../../lib/global";
 import initializeFirebase from "../../lib/initFirebase";
@@ -17,16 +18,11 @@ const db = admin.firestore();
 const ref = db.collection(firestore.collections.users);
 
 export default class UserClass implements User {
-    public static async register(newUser: any): Promise<User> {
+    // tslint:disable-next-line: max-line-length
+    public static async register(newUser: any): Promise<{ user: User, authToken: { iv: string, encryptedData: string } }> {
         // generate an id
         const id: string = nanoid();
-        const { username, name, email, password, loa = 0, course } = newUser;
-        let courseData: admin.firestore.DocumentSnapshot;
-        courseData = await admin.firestore().collection(firestore.collections.courses).doc(course).get();
-        console.log(courseData.data());
-        if (!courseData.exists) {
-            throw new Error("Invalid Course");
-        }
+        const { username, name, email, password, loa = 0 } = newUser;
         // check payload validity
         if (!(username && name && email && password)) {
             throw new Error("Invalid payload");
@@ -47,7 +43,6 @@ export default class UserClass implements User {
         try {
             const hash = await bcrypt.hashSync(password, globalConfig.hash.salts);
             const user: User = {
-                course: courseData.ref,
                 created,
                 id,
                 lastActive,
@@ -56,8 +51,14 @@ export default class UserClass implements User {
                 password: hash,
                 username,
             };
+            // generate auth token using firebase
+            const authToken: string = await admin.auth().createCustomToken(id);
+            const encrypted: { iv: string, encryptedData: string } = encrypt(authToken);
             await ref.doc(id).set(Object.assign(user, email && { email }));
-            return user;
+            return {
+                authToken: encrypted,
+                user,
+            };
         } catch (err) {
             throw new Error(err);
         }
@@ -79,7 +80,7 @@ export default class UserClass implements User {
     }
 
     public id: string;
-    public username: string;
+    public username: number;
     public password: string;
     public course: admin.firestore.DocumentReference;
     public email?: string;

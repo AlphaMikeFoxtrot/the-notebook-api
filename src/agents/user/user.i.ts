@@ -4,9 +4,9 @@ import Timestamp from "../common/timestamp.i";
 
 export default interface User {
     id: string;
-    username: string;
+    username: number;
     password: string;
-    course: admin.firestore.DocumentReference;
+    course?: admin.firestore.DocumentReference;
     email?: string;
     name?: string;
     loa: number;
