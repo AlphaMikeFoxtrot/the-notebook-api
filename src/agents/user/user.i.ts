@@ -6,7 +6,6 @@ export default interface User {
     id: string;
     username: number;
     password: string;
-    course?: admin.firestore.DocumentReference;
     email?: string;
     name?: string;
     loa: number;

@@ -12,8 +12,9 @@ const {
     getAll,
     getChildren,
     getOne,
+    login,
     removeChild,
-    updateResource
+    updateResource,
 } = globalConfig.routes.agentSpecific;
 
 // create a new user(register)
@@ -71,6 +72,24 @@ router.get(`${getOne}/:id`, (req: Request, res: Response) => {
             return res.status(200).json({
                 error: false,
                 user: data
+            }).end();
+        })
+        .catch((err) => {
+            return res.status(500).json({
+                error: err.message
+            }).end();
+        });
+});
+
+// login
+router.post(`${login}`, (req: Request, res: Response) => {
+    const { username, password } = req.body;
+    return UserClass
+        .login(username, password)
+        .then((value) => {
+            return res.status(200).json({
+                error: false,
+                user: value
             }).end();
         })
         .catch((err) => {

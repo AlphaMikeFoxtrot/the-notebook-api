@@ -79,10 +79,46 @@ export default class UserClass implements User {
             });
     }
 
+    public static async login(username: string, password: string): Promise<any> {
+        // check payload's validity
+        if (!username || !password) {
+            throw new Error("Invalid payload");
+        }
+        // get user from firestore
+        // tslint:disable-next-line: max-line-length
+        const query: admin.firestore.QuerySnapshot = await admin.firestore().collection(firestore.collections.users).where("username", "==", username).limit(1).get();
+        if (query.size <= 0) {
+            throw new Error("Resource does not exist");
+        }
+        let user: User;
+        query.forEach((doc) => {
+            user = doc.data() as User;
+        });
+        const { password: hashed, id } = user;
+        return bcrypt
+            .compare(password, hashed)
+            .then((value) => {
+                if (!value) {
+                    throw new Error("Invalid credentials");
+                }
+                return admin.auth().createCustomToken(id);
+            })
+            .then((authToken) => {
+                const encrypted: { iv: string, encryptedData: string } = encrypt(authToken);
+                return {
+                    ...user,
+                    authToken: encrypted
+                };
+            })
+            .catch((err) => {
+                console.log(err);
+                throw new Error("Invalid credentials");
+            });
+    }
+
     public id: string;
     public username: number;
     public password: string;
-    public course: admin.firestore.DocumentReference;
     public email?: string;
     public name?: string;
     public loa: number = 0;
@@ -97,12 +133,7 @@ export default class UserClass implements User {
         try {
             const userSnapshot: admin.firestore.DocumentSnapshot = await ref.doc(this.id).get();
             const user: User = userSnapshot.data() as User;
-            const courseSnapshot: admin.firestore.DocumentSnapshot = await user.course.get();
-            const course = courseSnapshot.data();
-            return {
-                ...user,
-                course: _.omit(course, "subjects")
-            };
+            return user;
         } catch (err) {
             throw new Error(err);
         }

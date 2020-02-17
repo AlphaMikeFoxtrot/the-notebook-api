@@ -21,8 +21,9 @@ const global: any = {
             getAll: "/omnis",
             getChildren: "/liberi",
             getOne: "/unus",
+            login: "/auctor",
             removeChild: "/aufero",
-            updateResource: "/immuto"
+            updateResource: "/immuto",
         },
         global: {
             course: `${process.env.BASE}/scilicet`,
