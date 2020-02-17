@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import bodyParser from "body-parser";
+import cors from "cors";
 import express from "express";
 
 import { decrypt } from "./lib/cryptic";
@@ -19,6 +20,7 @@ const { course, department, document, subject, user } = globalConfig.routes.glob
 // middlewares
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cors());
 
 // general
 app.use(express.static("public"));
