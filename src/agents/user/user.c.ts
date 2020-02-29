@@ -87,8 +87,7 @@ export default class UserClass implements User {
         // get user from firestore
         // tslint:disable-next-line: max-line-length
         const query: admin.firestore.QuerySnapshot = await admin.firestore().collection(firestore.collections.users).where("username", "==", username).limit(1).get();
-        console.log(query.size);
-        console.log(query.docs[0].data());
+        console.log("query size: ", query.size);
         if (query.size <= 0) {
             throw new Error("Resource does not exist");
         }
@@ -113,7 +112,6 @@ export default class UserClass implements User {
                 };
             })
             .catch((err) => {
-                console.log(err);
                 throw new Error("Invalid credentials");
             });
     }
