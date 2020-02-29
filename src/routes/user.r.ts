@@ -93,6 +93,7 @@ router.post(`${login}`, (req: Request, res: Response) => {
             }).end();
         })
         .catch((err) => {
+            console.log(err.message);
             return res.status(500).json({
                 error: err.message
             }).end();
