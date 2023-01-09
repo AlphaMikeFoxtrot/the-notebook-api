@@ -45,7 +45,7 @@
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "firebase-admin": "^8.9.2",
+    "firebase-admin": "^11.4.1",
     "lodash": "^4.17.15",
     "nanoid": "^2.1.10",
     "spacetime": "^6.3.0",
